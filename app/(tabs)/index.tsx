@@ -6,8 +6,9 @@ import AppleHealthKit, {
   HealthValue,
   HealthKitPermissions,
 } from "react-native-health";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function App() {
+export default function Home() {
   const [stepCount, setStepCount] = useState<number | null>(null);
   const [authorized, setAuthorized] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -58,13 +59,13 @@ export default function App() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Step Counter</Text>
+    <SafeAreaView>
+      <Text>Step Counter</Text>
 
-      {error && <Text style={styles.errorText}>{error}</Text>}
+      {error && <Text>{error}</Text>}
 
       {stepCount !== null ? (
-        <Text style={styles.stepText}>Today's Steps: {stepCount}</Text>
+        <Text>Today's Steps: {stepCount}</Text>
       ) : (
         <Text>Loading step count...</Text>
       )}
@@ -76,29 +77,6 @@ export default function App() {
       />
 
       <StatusBar style="auto" />
-    </View>
+    </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
-  stepText: {
-    fontSize: 18,
-    margin: 20,
-  },
-  errorText: {
-    color: "red",
-    marginBottom: 20,
-  },
-});
