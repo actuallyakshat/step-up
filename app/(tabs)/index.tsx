@@ -1,17 +1,14 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Button } from "react-native";
+import { Text, View, TouchableOpacity } from "react-native";
 import { useState, useEffect } from "react";
-
-import AppleHealthKit, {
-  HealthValue,
-  HealthKitPermissions,
-} from "react-native-health";
 import { SafeAreaView } from "react-native-safe-area-context";
+import AppleHealthKit, { HealthKitPermissions } from "react-native-health";
 
 export default function Home() {
-  const [stepCount, setStepCount] = useState<number | null>(null);
+  const [stepCount, setStepCount] = useState(7435);
+  const [weeklySteps, setWeeklySteps] = useState(35782);
   const [authorized, setAuthorized] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string>("");
 
   // Initialize HealthKit when component mounts
   useEffect(() => {
@@ -20,9 +17,9 @@ export default function Home() {
         read: [AppleHealthKit.Constants.Permissions.StepCount],
         write: [],
       },
-    } as HealthKitPermissions;
+    };
 
-    AppleHealthKit.initHealthKit(permissions, (error: string) => {
+    AppleHealthKit.initHealthKit(permissions, (error) => {
       if (error) {
         console.log("[ERROR] Cannot grant permissions!", error);
         setError("Failed to initialize HealthKit: " + error);
@@ -31,7 +28,6 @@ export default function Home() {
 
       console.log("HealthKit initialized successfully");
       setAuthorized(true);
-      // Fetch step data right away
       fetchStepData();
     });
   }, []);
@@ -39,44 +35,48 @@ export default function Home() {
   const fetchStepData = () => {
     const today = new Date();
     const options = {
-      date: today.toISOString(), // Get today's steps
+      date: today.toISOString(),
       includeManuallyAdded: true,
     };
 
-    AppleHealthKit.getStepCount(
-      options,
-      (error: string, result: HealthValue) => {
-        if (error) {
-          console.log("[ERROR] Cannot get step count!", error);
-          setError("Failed to get step count: " + error);
-          return;
-        }
-
-        console.log("Step count result:", result);
-        setStepCount(result.value);
+    AppleHealthKit.getStepCount(options, (error, result) => {
+      if (error) {
+        console.log("[ERROR] Cannot get step count!", error);
+        setError("Failed to get step count: " + error);
+        return;
       }
-    );
+
+      console.log("Step count result:", result);
+      setStepCount(result.value);
+    });
   };
 
+  // Calculate percentage of 10,000 step goal
+  const stepPercentage = Math.min(100, (stepCount / 10000) * 100);
+
   return (
-    <SafeAreaView>
-      <Text className="text-3xl">Step Counter</Text>
+    <SafeAreaView className="flex-1 bg-white">
+      <View className="px-5 py-7 flex-1">
+        <Text className="text-[2.75rem] font-extrabold tracking-tight">
+          Hey <Text className="text-lime-600">Akshat</Text> 👋🏼
+        </Text>
+        <View className="justify-between mt-5 gap-4">
+          <View className=" bg-white rounded-2xl p-4 shadow-lg">
+            <Text className="text-lg font-semibold">Today's Steps</Text>
+            <Text className="text-3xl font-bold mt-2 text-lime-600">
+              {stepCount}
+            </Text>
+          </View>
+          <View className=" bg-white rounded-2xl p-4 shadow-lg">
+            <Text className="text-lg font-semibold">Weekly Steps</Text>
+            <Text className="text-3xl font-bold mt-2 text-lime-600">
+              {weeklySteps}
+            </Text>
+          </View>
+        </View>
+      </View>
 
-      {error && <Text>{error}</Text>}
-
-      {stepCount !== null ? (
-        <Text>Today's Steps: {stepCount}</Text>
-      ) : (
-        <Text>Loading step count...</Text>
-      )}
-
-      <Button
-        title="Refresh Step Count"
-        onPress={fetchStepData}
-        disabled={!authorized}
-      />
-
-      <StatusBar style="auto" />
+      <StatusBar style="dark" />
     </SafeAreaView>
   );
 }
