@@ -60,7 +60,7 @@ export default function Home() {
 
   return (
     <SafeAreaView>
-      <Text>Step Counter</Text>
+      <Text className="text-3xl">Step Counter</Text>
 
       {error && <Text>{error}</Text>}
 
