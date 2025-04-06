@@ -10,7 +10,6 @@ export default function Home() {
   const [weeklySteps, setWeeklySteps] = useState(35782);
   const [authorized, setAuthorized] = useState(false);
   const [error, setError] = useState<string>("");
-  const { logout } = useAuthStore();
 
   // Initialize HealthKit when component mounts
   useEffect(() => {
@@ -76,14 +75,6 @@ export default function Home() {
             </Text>
           </View>
         </View>
-        <TouchableOpacity
-          className="bg-lime-600 p-4 rounded-xl"
-          onPress={logout}
-        >
-          <Text className="text-white text-center font-semibold text-lg">
-            Logout
-          </Text>
-        </TouchableOpacity>
       </View>
 
       <StatusBar style="dark" />
