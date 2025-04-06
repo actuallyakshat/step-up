@@ -1,9 +1,29 @@
-import { Tabs } from "expo-router";
+import { useAuthStore } from "@/store/auth";
 import { FontAwesome } from "@expo/vector-icons";
-import React from "react";
-import { View, Text } from "react-native";
+import { router, Tabs } from "expo-router";
+import React, { useEffect } from "react";
+import { View } from "react-native";
 
 export default function TabsLayout() {
+  const { isLoggedIn } = useAuthStore();
+  const [isMounted, setIsMounted] = React.useState(false);
+
+  console.log("isLoggedIn", isLoggedIn);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
+
+    if (!isLoggedIn) {
+      router.replace("/(auth)/login");
+    }
+
+    console.log("isLoggedIn", isLoggedIn);
+  }, [isLoggedIn, isMounted]);
+
   return (
     <Tabs
       screenOptions={{
@@ -24,7 +44,7 @@ export default function TabsLayout() {
         options={{
           title: "Home",
           headerShown: false,
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color, size }: { color: string; size: number }) => (
             <View style={{ alignItems: "center" }}>
               <FontAwesome name="home" color={color} size={size} />
             </View>
@@ -36,7 +56,7 @@ export default function TabsLayout() {
         options={{
           title: "Leaderboard",
           headerShown: false,
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color, size }: { color: string; size: number }) => (
             <View style={{ alignItems: "center" }}>
               <FontAwesome name="bar-chart" color={color} size={size} />
             </View>
@@ -48,7 +68,7 @@ export default function TabsLayout() {
         options={{
           title: "Profile",
           headerShown: false,
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color, size }: { color: string; size: number }) => (
             <View style={{ alignItems: "center" }}>
               <FontAwesome name="user" color={color} size={size} />
             </View>

@@ -1,14 +1,16 @@
+import { useAuthStore } from "@/store/auth";
 import { StatusBar } from "expo-status-bar";
-import { Text, View, TouchableOpacity } from "react-native";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Text, TouchableOpacity, View } from "react-native";
+import AppleHealthKit from "react-native-health";
 import { SafeAreaView } from "react-native-safe-area-context";
-import AppleHealthKit, { HealthKitPermissions } from "react-native-health";
 
 export default function Home() {
   const [stepCount, setStepCount] = useState(7435);
   const [weeklySteps, setWeeklySteps] = useState(35782);
   const [authorized, setAuthorized] = useState(false);
   const [error, setError] = useState<string>("");
+  const { logout } = useAuthStore();
 
   // Initialize HealthKit when component mounts
   useEffect(() => {
@@ -74,6 +76,14 @@ export default function Home() {
             </Text>
           </View>
         </View>
+        <TouchableOpacity
+          className="bg-lime-600 p-4 rounded-xl"
+          onPress={logout}
+        >
+          <Text className="text-white text-center font-semibold text-lg">
+            Logout
+          </Text>
+        </TouchableOpacity>
       </View>
 
       <StatusBar style="dark" />
