@@ -18,9 +18,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function Login() {
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
-  const [loading, setLoading] = React.useState(false);
 
   const { login } = useAuthStore();
+  const { isLoggingIn } = useAuth();
 
   const validateForm = () => {
     if (username.includes(" ")) {
@@ -41,23 +41,17 @@ export default function Login() {
   };
 
   const handleLogin = async () => {
-    //validate
     validateForm();
 
-    //call api
-    setLoading(true);
     try {
       const response = await authApi.login({ username, password });
       login(response.user, response.token);
     } catch (error: AxiosError | any) {
       Alert.alert("Login Failed!", error.message, [{ text: "OK" }]);
       return;
-    } finally {
-      setLoading(false);
     }
-    //take action
+
     router.replace("/(tabs)");
-    setLoading(false);
   };
 
   return (
@@ -103,7 +97,7 @@ export default function Login() {
             className="bg-lime-600 p-4 rounded-xl"
             onPress={handleLogin}
           >
-            {!loading ? (
+            {!isLoggingIn ? (
               <Text className="text-white text-center font-semibold text-lg">
                 Sign In
               </Text>

@@ -1,10 +1,23 @@
-import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
-import React from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { authApi } from "@/api/auth";
+import { useAuth } from "@/api/hooks/useAuth";
+import { useAuthStore } from "@/store/auth";
 import { Ionicons } from "@expo/vector-icons";
+import { AxiosError } from "axios";
 import { router } from "expo-router";
+import React from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Register() {
+  const { login } = useAuthStore();
+  const { isRegistering } = useAuth();
   const [name, setName] = React.useState("");
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -57,10 +70,20 @@ export default function Register() {
     return isValid;
   };
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (validateForm()) {
-      // Handle registration logic here
-      console.log("Form is valid");
+      try {
+        const response = await authApi.register({
+          name,
+          username,
+          password,
+        });
+        login(response.user, response.token);
+        router.replace("/(tabs)");
+      } catch (error: AxiosError | any) {
+        Alert.alert("Registration Failed!", error.message, [{ text: "OK" }]);
+        return;
+      }
     }
   };
 
@@ -148,9 +171,13 @@ export default function Register() {
             className="bg-lime-600 p-4 rounded-xl mt-4"
             onPress={handleRegister}
           >
-            <Text className="text-white text-center font-semibold text-lg">
-              Sign Up
-            </Text>
+            {isRegistering ? (
+              <ActivityIndicator size="small" color="white" />
+            ) : (
+              <Text className="text-white text-center font-semibold text-lg">
+                Create Account
+              </Text>
+            )}
           </TouchableOpacity>
         </View>
 

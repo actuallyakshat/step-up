@@ -8,8 +8,6 @@ export default function TabsLayout() {
   const { isLoggedIn } = useAuthStore();
   const [isMounted, setIsMounted] = React.useState(false);
 
-  console.log("isLoggedIn", isLoggedIn);
-
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -20,8 +18,6 @@ export default function TabsLayout() {
     if (!isLoggedIn) {
       router.replace("/(auth)/login");
     }
-
-    console.log("isLoggedIn", isLoggedIn);
   }, [isLoggedIn, isMounted]);
 
   return (
